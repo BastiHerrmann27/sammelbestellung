@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Mühldorf Badelatschen - Sammelbestellung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-50px) translateY(-50px); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #ff4757;
+        }
+
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff4757;
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .color-option:hover {
+            border-color: #ff4757;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .color-option input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #ddd;
+            position: relative;
+        }
+
+        .color-preview.dual {
+            background: linear-gradient(45deg, var(--color1) 50%, var(--color2) 50%);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .orders-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .order-item {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .order-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .order-details {
+            flex-grow: 1;
+        }
+
+        .order-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .order-info {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .summary h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ FC Mühldorf Badelatschen</h1>
+            <p>Sammelbestellung - Innletten</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>Neue Bestellung hinzufügen</h2>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-Mail (optional):</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Farbe wählen:</label>
+                        <div class="color-grid">
+                            <div class="color-option">
+                                <input type="radio" id="schwarz-schwarz" name="color" value="Schwarz-Schwarz" required>
+                                <div class="color-preview dual" style="--color1: #000; --color2: #000;"></div>
+                                <label for="schwarz-schwarz">Schwarz-Schwarz</label>
+                            </div>
+                            <div class="color-option">
+                                <input type="radio" id="schwarz-rot" name="color" value="Schwarz-Rot" required>
+                                <div class="color-preview dual" style="--color1: #000; --color2: #ff4757;"></div>
+                                <label for="schwarz-rot">Schwarz-Rot</label>
+                            </div>
+                            <div class="color-option">
+                                <input type="radio" id="weiss-rot" name="color" value="Weiß-Rot" required>
+                                <div class="color-preview dual" style="--color1: #fff; --color2: #ff4757;"></div>
+                                <label for="weiss-rot">Weiß-Rot</label>
+                            </div>
+                            <div class="color-option">
+                                <input type="radio" id="weiss-schwarz" name="color" value="Weiß-Schwarz" required>
+                                <div class="color-preview dual" style="--color1: #fff; --color2: #000;"></div>
+                                <label for="weiss-schwarz">Weiß-Schwarz</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="size">Größe:</label>
+                        <select id="size" name="size" required>
+                            <option value="">Bitte wählen...</option>
+                            <option value="39">39</option>
+                            <option value="40">40</option>
+                            <option value="41">41</option>
+                            <option value="42">42</option>
+                            <option value="43">43</option>
+                            <option value="44">44</option>
+                            <option value="45">45</option>
+                            <option value="46">46</option>
+                            <option value="47">47</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Anzahl:</label>
+                        <input type="number" id="quantity" name="quantity" min="1" max="10" value="1" required>
+                    </div>
+
+                    <button type="submit" class="btn">Bestellung hinzufügen</button>
+                </form>
+            </div>
+
+            <div class="orders-section">
+                <h2>Aktuelle Bestellungen</h2>
+                <div id="ordersList">
+                    <p style="text-align: center; color: #7f8c8d; font-style: italic;">Noch keine Bestellungen vorhanden</p>
+                </div>
+            </div>
+
+            <div class="summary">
+                <h3>Bestellübersicht</h3>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalOrders">0</span>
+                        <span>Bestellungen</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalPairs">0</span>
+                        <span>Paar Badelatschen</span>
+                    </div>
+                </div>
+                <button class="btn export-btn" onclick="exportOrders()">📋 Liste exportieren</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let orders = [];
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const order = {
+                id: Date.now(),
+                name: formData.get('name'),
+                email: formData.get('email') || '',
+                color: formData.get('color'),
+                size: formData.get('size'),
+                quantity: parseInt(formData.get('quantity'))
+            };
+            
+            orders.push(order);
+            updateOrdersList();
+            updateSummary();
+            e.target.reset();
+            
+            // Success animation
+            const btn = e.target.querySelector('.btn');
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Hinzugefügt!';
+            btn.style.background = '#2ecc71';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+        });
+
+        function updateOrdersList() {
+            const ordersList = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p style="text-align: center; color: #7f8c8d; font-style: italic;">Noch keine Bestellungen vorhanden</p>';
+                return;
+            }
+            
+            ordersList.innerHTML = orders.map(order => `
+                <div class="order-item">
+                    <div class="order-details">
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-info">
+                            ${order.color} • Größe ${order.size} • ${order.quantity}x
+                            ${order.email ? ` • ${order.email}` : ''}
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteOrder(${order.id})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteOrder(id) {
+            orders = orders.filter(order => order.id !== id);
+            updateOrdersList();
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const totalOrders = orders.length;
+            const totalPairs = orders.reduce((sum, order) => sum + order.quantity, 0);
+            
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalPairs').textContent = totalPairs;
+        }
+
+        function exportOrders() {
+            if (orders.length === 0) {
+                alert('Keine Bestellungen zum Exportieren vorhanden!');
+                return;
+            }
+            
+            let exportText = 'FC Mühldorf Badelatschen - Sammelbestellung\n';
+            exportText += '=====================================\n\n';
+            
+            orders.forEach((order, index) => {
+                exportText += `${index + 1}. ${order.name}\n`;
+                exportText += `   Farbe: ${order.color}\n`;
+                exportText += `   Größe: ${order.size}\n`;
+                exportText += `   Anzahl: ${order.quantity}\n`;
+                if (order.email) {
+                    exportText += `   E-Mail: ${order.email}\n`;
+                }
+                exportText += '\n';
+            });
+            
+            exportText += `Gesamt: ${orders.length} Bestellungen, ${orders.reduce((sum, order) => sum + order.quantity, 0)} Paar Badelatschen\n`;
+            
+            // Create and download file
+            const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'FC_Muehldorf_Badelatschen_Bestellungen.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Add some interactive effects
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+            });
+        });
+    </script>
+</body>
+</html>
